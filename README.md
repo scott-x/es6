@@ -1,13 +1,14 @@
-# es6有个新特性 import
-要使用import关键字，需用到babel
+## es7
+v1.0只支持es6的语法，若使用async function则会报错，因为那是es7的新特性
+若要使用es7还必需安装2个插件：
+bable的运行环境以及babel插件编译的运行环境
 ```
-npm  i babel-cli babel-preset-env -D
-npm i nodemon -D
+npm i -S babel-plugin-transform-runtime babel-runtime
 ```
-安装完成后，还需要在根目录下添加个配置文件`.babelrc`
+### 配置`.babelrc`
 ```
 {
-	"presets": [
+  "presets": [
       [
         "env",
         {
@@ -16,29 +17,31 @@ npm i nodemon -D
           }
         }
       ]
-	]
+  ],
+  "plugins":[
+     [
+       "transform-runtime",{
+          "polyfill":false,
+          "regenerator":true
+       }
+      
+     ]
+  ]
 }
-```
-### package.json下自动编译脚本
-意思是如果src目录有变化就自动编译
-```
- "dev": "nodemon -w src --exec \"babel-node src --presets env\""
- 也可写成
-  "dev": "nodemon -w src --exec \"babel-node src/index --presets env\""
 ```
 src/index.js
 ```
-import fs from 'fs'
 import { promisify } from 'util';
-import { resolve as r } from 'path';
-import { readFile, writeFileSync as wfs } from 'fs';
-import * as qs from 'querystring'
+import { resolve } from 'path';
+import { readFile } from 'fs';
 
-promisify(readFile)(r(__dirname,'../package.json'))
-  .then(data=>{
+async function init(){
+  let data = await promisify(readFile)(resolve(__dirname,'../package.json'));
     data=JSON.parse(data)
     console.log(data.name);
-    wfs(r(__dirname,'./name'),String(data.name),'utf8')
-})
-
+}
+init()
+```
+```
+npm run build
 ```

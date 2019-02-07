@@ -1,12 +1,10 @@
-import fs from 'fs'
 import { promisify } from 'util';
-import { resolve as r } from 'path';
-import { readFile, writeFileSync as wfs } from 'fs';
-import * as qs from 'querystring'
+import { resolve } from 'path';
+import { readFile } from 'fs';
 
-promisify(readFile)(r(__dirname,'../package.json'))
-  .then(data=>{
+async function init(){
+	let data = await promisify(readFile)(resolve(__dirname,'../package.json'));
     data=JSON.parse(data)
     console.log(data.name);
-    wfs(r(__dirname,'./name'),String(data.name),'utf8')
-})
+}
+init()
